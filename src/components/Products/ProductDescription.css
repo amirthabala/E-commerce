@@ -1,0 +1,15 @@
+.product-container{
+    margin-top: 7%;
+}
+
+.coupon-container, .btn-container{
+    width: 75%;
+}
+
+
+@media (min-width: 992px) {
+    .coupon-container, .btn-container{
+        width: 50%;
+    }
+}
+
