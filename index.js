@@ -7,9 +7,11 @@ app.use(express.json());
 
 const loginRoute = require("./routes/login");
 const productsRoute = require("./routes/products");
+const cartRoutes = require("./routes/cart");
 
 app.use("/", loginRoute);
 app.use("/products", productsRoute);
+app.use("/cart", cartRoutes);
 
 const start = () => {
   try {
