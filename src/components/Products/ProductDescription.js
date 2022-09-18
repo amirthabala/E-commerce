@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { productsController } from "../../api/products";
 import { showNotification } from "../../utils/showNotification";
 import parse from "react-html-parser";
+import { cartContoller } from "../../api/cart";
 
 function ProductDescription(props) {
   const { id } = useParams();
@@ -27,9 +28,18 @@ function ProductDescription(props) {
 
   useEffect(() => {}, [productDetails]);
 
-  const checkLogin = () => {
+  const checkLogin = async () => {
     if (localStorage.getItem("meruwell_token")) {
-      showNotification("Added", "success");
+      try {
+        const result = await cartContoller.addProductToCart(id);
+        if (result.success) {
+          showNotification(result.message, "success");
+        } else {
+          showNotification(result.message, "error");
+        }
+      } catch (error) {
+        showNotification(error.message, "error");
+      }
     } else {
       showNotification("Please Login to add items to Cart!", "warning");
       props.setLoginShow(true);

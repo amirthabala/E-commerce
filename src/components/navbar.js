@@ -12,7 +12,7 @@ function Navbartop(props) {
     setLoginText(
       localStorage.getItem("meruwell_token") ? "Sign Out" : "Sign In"
     );
-  }, [flag]);
+  }, [flag, props]);
 
   const logout = () => {
     localStorage.removeItem("meruwell_token");
@@ -40,11 +40,11 @@ function Navbartop(props) {
               <Nav.Link href="/">
                 <i className="fas fa-home me-2"></i>Home
               </Nav.Link>
-              <Nav.Link href="/">
+              <Nav.Link href="/cart">
                 <i className="fas fa-cart-plus me-2"></i>Cart
               </Nav.Link>
               <Navbar.Text
-                className="px-2"
+                className="ps-2"
                 style={{ cursor: "pointer" }}
                 onClick={loginText === "Sign In" ? login : logout}
               >

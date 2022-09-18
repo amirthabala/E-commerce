@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import LoginModal from "./components/Login/LoginModal";
 import { useState } from "react";
+import Cart from "./components/Cart/Cart";
 
 function App() {
   const clientId =
@@ -16,7 +17,7 @@ function App() {
   const [loginShow, setLoginShow] = useState(false);
 
   const loginModalComponent = () => {
-    return <Navbartop setLoginShow={setLoginShow} />;
+    return <Navbartop loginShow={loginShow} setLoginShow={setLoginShow} />;
   };
 
   return (
@@ -47,6 +48,18 @@ function App() {
                 <>
                   {loginModalComponent()}
                   <ProductDescription setLoginShow={setLoginShow} />
+                </>
+              }
+            />
+
+            {/* Cart Page */}
+            <Route
+              exact
+              path="/cart"
+              element={
+                <>
+                  {loginModalComponent()}
+                  <Cart />
                 </>
               }
             />
