@@ -11,64 +11,77 @@ import { useState } from "react";
 import Cart from "./components/Cart/Cart";
 
 function App() {
-  const clientId =
-    "176237103269-87dpchtm9nugds3ol826f104pn8gtnv2.apps.googleusercontent.com";
+	const clientId =
+		"176237103269-87dpchtm9nugds3ol826f104pn8gtnv2.apps.googleusercontent.com";
 
-  const [loginShow, setLoginShow] = useState(false);
+	const [loginShow, setLoginShow] = useState(false);
+	const [refresh, setRefresh] = useState(false);
 
-  const loginModalComponent = () => {
-    return <Navbartop loginShow={loginShow} setLoginShow={setLoginShow} />;
-  };
+	const loginModalComponent = () => {
+		return (
+			<Navbartop
+				loginShow={loginShow}
+				setLoginShow={setLoginShow}
+				refresh={refresh}
+				setRefresh={setRefresh}
+			/>
+		);
+	};
 
-  return (
-    <div>
-      <BrowserRouter>
-        <GoogleOAuthProvider clientId={clientId}>
-          <ToastContainer />
-          <Routes>
-            <Route exact path="/" element={<Navigate to="/products" />} />
+	return (
+		<div>
+			<BrowserRouter>
+				<GoogleOAuthProvider clientId={clientId}>
+					<ToastContainer />
+					<Routes>
+						<Route exact path="/" element={<Navigate to="/products" />} />
 
-            {/* Home Page */}
-            <Route
-              exact
-              path="/products"
-              element={
-                <>
-                  {loginModalComponent()}
-                  <ProductPage />
-                </>
-              }
-            />
+						{/* Home Page */}
+						<Route
+							exact
+							path="/products"
+							element={
+								<>
+									{loginModalComponent()}
+									<ProductPage />
+								</>
+							}
+						/>
 
-            {/* Product Description Page */}
-            <Route
-              exact
-              path="/products/:id"
-              element={
-                <>
-                  {loginModalComponent()}
-                  <ProductDescription setLoginShow={setLoginShow} />
-                </>
-              }
-            />
+						{/* Product Description Page */}
+						<Route
+							exact
+							path="/products/:id"
+							element={
+								<>
+									{loginModalComponent()}
+									<ProductDescription setLoginShow={setLoginShow} />
+								</>
+							}
+						/>
 
-            {/* Cart Page */}
-            <Route
-              exact
-              path="/cart"
-              element={
-                <>
-                  {loginModalComponent()}
-                  <Cart />
-                </>
-              }
-            />
-          </Routes>
-          <LoginModal show={loginShow} setShow={setLoginShow} />
-        </GoogleOAuthProvider>
-      </BrowserRouter>
-    </div>
-  );
+						{/* Cart Page */}
+						<Route
+							exact
+							path="/cart"
+							element={
+								<>
+									{loginModalComponent()}
+									<Cart refresh={refresh} />
+								</>
+							}
+						/>
+					</Routes>
+					<LoginModal
+						show={loginShow}
+						setShow={setLoginShow}
+						refresh={refresh}
+						setRefresh={setRefresh}
+					/>
+				</GoogleOAuthProvider>
+			</BrowserRouter>
+		</div>
+	);
 }
 
 export default App;
