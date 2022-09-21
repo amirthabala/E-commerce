@@ -1,16 +1,12 @@
 import { httpRequest } from "./httpRequest";
+import baseURL from "../utils/urls";
 
-const baseURL =
-	process.env.NODE_ENV === "development"
-		? "http://localhost:4000"
-		: "https://meruhealthapi.skillmind.org";
-
-const getCartItemsByUserId = async (userId) => {
+const getCartItemsByUserId = async () => {
 	try {
 		const response = await httpRequest({
 			method: "get",
 			baseURL: baseURL,
-			url: `/cart/${userId}`,
+			url: `/cart`,
 		});
 		if (response.status >= 200 && response.status < 300) {
 			return response.data;

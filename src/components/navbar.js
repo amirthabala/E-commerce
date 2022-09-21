@@ -3,20 +3,38 @@ import { useEffect, useState } from "react";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import "../App.css";
 import { showNotification } from "../utils/showNotification";
+import jwt from "jsonwebtoken";
 
 function Navbartop(props) {
 	const [loginText, setLoginText] = useState("");
+	const jwtToken = localStorage.getItem("meruwell_token");
 
 	useEffect(() => {
-		setLoginText(
-			localStorage.getItem("meruwell_token") ? "Sign Out" : "Sign In"
-		);
+		if (jwtToken) {
+			const decodeToken = jwt.decode(jwtToken);
+			if (Date.now() >= decodeToken.exp) {
+				forceLogout();
+			}
+		}
+	}, []);
+
+	useEffect(() => {
+		setLoginText(jwtToken ? "Sign Out" : "Sign In");
 	}, [props]);
 
 	const logout = () => {
 		localStorage.removeItem("meruwell_token");
 		props.setRefresh(!props.refresh);
 		showNotification("Signed Out Successfully", "success");
+	};
+
+	const forceLogout = () => {
+		localStorage.removeItem("meruwell_token");
+		props.setRefresh(!props.refresh);
+		showNotification(
+			"Session Expired! Please login again to Continue Shopping",
+			"error"
+		);
 	};
 
 	const login = () => {

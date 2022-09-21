@@ -55,7 +55,11 @@ function App() {
 							element={
 								<>
 									{loginModalComponent()}
-									<ProductDescription setLoginShow={setLoginShow} />
+									<ProductDescription
+										setLoginShow={setLoginShow}
+										refresh={refresh}
+										setRefresh={setRefresh}
+									/>
 								</>
 							}
 						/>

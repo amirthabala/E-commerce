@@ -9,13 +9,14 @@ import { showNotification } from "../../utils/showNotification";
 import parse from "react-html-parser";
 import { cartContoller } from "../../api/cart";
 
-function ProductDescription(props) {
+function ProductDescription({ setLoginShow, refresh, setRefresh }) {
 	const { id } = useParams();
 	const [productDetails, setProductDetails] = useState();
 
 	useEffect(async () => {
 		try {
-			const result = await productsController.getProductById(id);
+			const isLoggedIn = localStorage.getItem("meruwell_token") ? true : false;
+			const result = await productsController.getProductById(id, isLoggedIn);
 			if (result.success) {
 				setProductDetails(result.productDetails);
 			} else {
@@ -24,7 +25,7 @@ function ProductDescription(props) {
 		} catch (error) {
 			showNotification(error.message, "error");
 		}
-	}, [id]);
+	}, [id, refresh]);
 
 	useEffect(() => {}, [productDetails]);
 
@@ -37,12 +38,13 @@ function ProductDescription(props) {
 				} else {
 					showNotification(result.message, "error");
 				}
+				setRefresh(!refresh);
 			} catch (error) {
 				showNotification(error.message, "error");
 			}
 		} else {
 			showNotification("Please Login to add items to Cart!", "warning");
-			props.setLoginShow(true);
+			setLoginShow(true);
 		}
 	};
 

@@ -16,11 +16,14 @@ function LoginModal({ show, setShow, refresh, setRefresh }) {
 	const onSuccess = async (res) => {
 		try {
 			const result = await loginController.signIn({ code: res.code });
+
 			if (result.success) {
-				localStorage.setItem("meruwell_token", result.data.code);
+				localStorage.setItem("meruwell_token", result.data.token);
 				setRefresh(!refresh);
 				showNotification(result.message, "success");
 				handleClose();
+			} else {
+				showNotification(result.message, "error");
 			}
 		} catch (error) {
 			showNotification(error.message, "error");

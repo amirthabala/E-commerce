@@ -27,7 +27,7 @@ function Cart(props) {
 		if (localStorage.getItem("meruwell_token")) {
 			try {
 				setIsLoggedIn(true);
-				const result = await cartContoller.getCartItemsByUserId(1);
+				const result = await cartContoller.getCartItemsByUserId();
 				if (result.success) {
 					setCartItems(result?.cartItems);
 				} else {
@@ -41,7 +41,6 @@ function Cart(props) {
 			// showNotification("Please Login to add items to Cart!", "warning");
 			setCartItems([]);
 		}
-		console.log("useeffectcalled", localStorage.getItem("meruwell_token"));
 	}, [props, localRefresh]);
 
 	useEffect(() => {}, [isLoggedIn]);
