@@ -1,71 +1,53 @@
 const { db } = require("../db");
-const { google } = require("googleapis");
+const jwt = require("jsonwebtoken");
+const getUserFromToken = require("../getUserFromToken");
 
 module.exports = {
-  signIn: async (code) => {
-    try {
-      const clientId =
-        "176237103269-87dpchtm9nugds3ol826f104pn8gtnv2.apps.googleusercontent.com";
-      const clientSecret = "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";
-      const redirectURL = "http://localhost:3000";
+	signIn: async (code) => {
+		try {
+			const user = await getUserFromToken(code);
 
-      const oauth2Client = new google.auth.OAuth2(
-        clientId,
-        clientSecret,
-        redirectURL
-      );
+			const [isUserExist] = await db.query(
+				`SELECT id FROM users WHERE email = ? AND deleted_at IS NULL`,
+				[user.email]
+			);
 
-      const { tokens } = await oauth2Client.getToken(code);
+			//jwt signing
+			const payload = {
+				code: code,
+				iat: Date.now(),
+				exp: Date.now() + 1000 * 60 * 60 * 24 * 2, //expires in 2 days
+			};
 
-      oauth2Client.setCredentials(tokens);
+			const token = jwt.sign(payload, process.env.TOKEN_SECRET);
 
-      google.options({
-        auth: oauth2Client,
-      });
-      const oauth = google.oauth2("v2");
-      const profile = await oauth.userinfo.get({});
+			let userData;
 
-      const [isUserExist] = await db.query(
-        `SELECT id FROM users WHERE email = ? AND deleted_at IS NULL`,
-        [profile.data.email]
-      );
+			if (isUserExist.length === 0) {
+				[userData] = await db.query(
+					`INSERT INTO users (username, email, picture, token, created_at, updated_at) VALUES (?,?,?,?,CAST(NOW() AS DATETIME),CAST(NOW() AS DATETIME))`,
+					[user.name, user.email, user.picture, token]
+				);
+			} else {
+				[userData] = await db.query(
+					`UPDATE users SET username = ?, picture = ?, token = ?, updated_at = CAST(NOW() AS DATETIME) WHERE id = ? AND deleted_at IS NULL;
+			    		SELECT id, username, email, picture FROM users WHERE id = ? AND deleted_at IS NULL`,
+					[user.name, user.picture, token, isUserExist[0].id, isUserExist[0].id]
+				);
+			}
 
-      let userData;
-
-      if (isUserExist.length === 0) {
-        [userData] = await db.query(
-          `INSERT INTO users (username, email, picture, token, created_at, updated_at) VALUES (?,?,?,?,CAST(NOW() AS DATETIME),CAST(NOW() AS DATETIME))`,
-          [
-            profile.data.name,
-            profile.data.email,
-            profile.data.picture,
-            JSON.stringify(tokens),
-          ]
-        );
-      } else {
-        [userData] = await db.query(
-          `UPDATE users SET username = ?, picture = ?, token = ?, updated_at = CAST(NOW() AS DATETIME) WHERE id = ? AND deleted_at IS NULL;
-          SELECT id, email, picture FROM users WHERE id = ? AND deleted_at IS NULL`,
-          [
-            profile.data.name,
-            profile.data.picture,
-            JSON.stringify(tokens),
-            isUserExist[0].id,
-            isUserExist[0].id,
-          ]
-        );
-      }
-
-      return isUserExist.length === 0
-        ? {
-            id: userData.insertId,
-            email: profile.data.email,
-            picture: profile.data.picture,
-            code: code,
-          }
-        : { ...userData[1][0], code: code };
-    } catch (err) {
-      throw err;
-    }
-  },
+			return isUserExist.length === 0
+				? {
+						id: userData.insertId,
+						email: user.email,
+						picture: user.picture,
+						name: user.name,
+						token: token,
+				  }
+				: { ...userData[1][0], token: token };
+		} catch (err) {
+			console.error(err);
+			throw err;
+		}
+	},
 };
