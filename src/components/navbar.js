@@ -12,7 +12,7 @@ function Navbartop(props) {
 	useEffect(() => {
 		if (jwtToken) {
 			const decodeToken = jwt.decode(jwtToken);
-			if (Date.now() >= decodeToken.exp) {
+			if (Date.now() >= decodeToken?.exp) {
 				forceLogout();
 			}
 		}
