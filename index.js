@@ -12,6 +12,10 @@ const cartRoutes = require("./routes/cart");
 
 // app.use(setCurrentUser);
 
+app.get("/health", (req, res) => {
+	res.send("Success");
+});
+
 app.use("/", loginRoute);
 app.use("/products", productsRoute);
 app.use("/cart", cartRoutes);
